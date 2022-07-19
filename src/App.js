@@ -57,59 +57,102 @@ const useCountry = () => {
     lang: "nl",
     error: "",
     isLoading: false,
+    langName: "Dutch",
   });
   const [languageOptions, setLanguageOptions] = useState([]);
 
   useEffect(() => {
+    let controller = new AbortController();
     async function getLanguageOptions() {
-      const response = await fetch(`https://restcountries.com/v3.1/all`);
-      const countries = await response.json();
-      //[{name: "English", code: "eng"}, {name: "Spanish", code: "es"}]
-      //{eng: "English", es: "Spanish"}
-      let countryOptions = {};
-      for (const country of countries) {
-        // Object.assign(countryOptions, country.languages);
-        countryOptions = { ...countryOptions, ...country.languages };
+      try {
+        const response = await fetch(`https://restcountries.com/v3.1/all`, {
+          signal: controller.signal,
+        });
+        const countries = await response.json();
+
+        //[{name: "English", code: "eng"}, {name: "Spanish", code: "es"}]
+        //{eng: "English", es: "Spanish"}
+        let countryOptions = {};
+        for (const country of countries) {
+          // Object.assign(countryOptions, country.languages);
+          countryOptions = { ...countryOptions, ...country.languages };
+        }
+
+        setLanguageOptions(countryOptions);
+      } catch (error) {
+        if (error) {
+          console.log("ERROR", error.name);
+        }
       }
-      setLanguageOptions(countryOptions);
     }
     getLanguageOptions();
   }, []);
 
   useEffect(() => {
+    let controller = new AbortController();
+
     async function getCountryData() {
       setApiStatus((prevStatus) => {
-        return { ...prevStatus, isLoading: true };
+        return { ...prevStatus, isLoading: true, error: "" };
       });
-      const response = await fetch(
-        `https://deelay.me/2000/https://restcountries.com/v2/lang/${apiStatus.lang}`
-      );
-      const langData = await response.json();
-      if (response.status === 404) {
-        setApiStatus((prevStatus) => {
-          return {
-            ...prevStatus,
-            data: [],
-            error: "Not found",
-            isLoading: false,
-          };
-        });
-        //no results. we can stop!
-        return;
-      }
-      if (response.status === 200) {
-        setApiStatus((prevStatus) => {
-          return { ...prevStatus, data: langData, error: "", isLoading: false };
-        });
-        return;
+
+      try {
+        const response = await fetch(
+          `https://deelay.me/2000/https://restcountries.com/v2/lang/${apiStatus.lang}`,
+          {
+            signal: controller.signal,
+          }
+        );
+        const langData = await response.json();
+        if (response.status === 404) {
+          setApiStatus((prevStatus) => {
+            return {
+              ...prevStatus,
+              data: [],
+              error: "Not found",
+              isLoading: false,
+            };
+          });
+          //no results. we can stop!
+          return;
+        }
+        if (response.status === 200) {
+          setApiStatus((prevStatus) => {
+            return {
+              ...prevStatus,
+              data: langData,
+              error: "",
+              isLoading: false,
+            };
+          });
+          return;
+        }
+      } catch (error) {
+        console.log("ERROR", error.name);
+        //handle operation errors
+        // controller.abort();
       }
     }
     getCountryData();
+
+    return () => {
+      controller.abort();
+      console.log("CLEAN UP TIME!");
+    };
   }, [apiStatus.lang]);
 
   const debounceHandler = debounce((e) => {
-    console.log("ELEMENT", e.target.value);
-    console.log("languageOptions", languageOptions);
+    if (e.target.value === "") {
+      return setApiStatus((prevStatus) => {
+        return {
+          ...prevStatus,
+          data: [],
+          error: "Please, enter valid language)",
+          isLoading: false,
+          langName: "",
+        };
+      });
+    }
     const languageCode = Object.entries(languageOptions).find((langOption) => {
       if (langOption[1].includes(e.target.value)) {
         return true;
@@ -117,12 +160,14 @@ const useCountry = () => {
         return false;
       }
     });
+    console.log("E.TARGET", e.target.value);
     if (languageCode === undefined) {
       setApiStatus((prevStatus) => {
         return {
           ...prevStatus,
           data: [],
           error: "This language could not be found",
+          langName: "",
         };
       });
       return;
@@ -130,7 +175,11 @@ const useCountry = () => {
 
     console.log("LANGUAGE CODE", languageCode[0]);
     setApiStatus((prevStatus) => {
-      return { ...prevStatus, lang: languageCode[0] };
+      return {
+        ...prevStatus,
+        lang: languageCode[0],
+        langName: languageCode[1],
+      };
     });
   }, 500);
 
@@ -145,7 +194,7 @@ function App() {
       <div className="main">
         <Dropdown>
           <DropdownContent>
-            <label for="language">Enter what you are looking for</label>
+            <label htmlFor="language">Enter what you are looking for</label>
             <Input
               type="text"
               name="language"
@@ -160,6 +209,7 @@ function App() {
           </DropdownContent>
         </Dropdown>
         <Error>{apiStatus.error}</Error>
+        <p>Searching for countries with language {apiStatus.langName}</p>
         <div>
           {apiStatus.isLoading ? (
             <Load src={loadSpin} alt="loadSpin" />
