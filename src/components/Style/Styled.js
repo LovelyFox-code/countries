@@ -30,6 +30,11 @@ export const Flex = styled.div`
   padding: 10px 24px;
   border-radius: 18px;
 `;
+export const CenteredDiv = styled.div`
+  width: 80%;
+  text-align: center;
+  margin: auto;
+`;
 export const Load = styled.img`
   position: absolute;
   left: 0;

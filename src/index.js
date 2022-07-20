@@ -14,6 +14,7 @@ root.render(
       <Routes>
         <Route path="/" element={<App />}></Route>
         <Route path="/search" element={<SearchPage />}></Route>
+        <Route path="/country/:countryName" element={<CountryInfo />}></Route>
       </Routes>
     </React.StrictMode>
   </BrowserRouter>

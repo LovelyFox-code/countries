@@ -94,7 +94,6 @@ const useCountry = () => {
           return;
         }
       } catch (error) {
-        console.log("ERROR", error.name);
         //handle operation errors
         // controller.abort();
       }
@@ -103,7 +102,6 @@ const useCountry = () => {
 
     return () => {
       controller.abort();
-      console.log("CLEAN UP TIME!");
     };
   }, [apiStatus.lang]);
 
@@ -152,7 +150,7 @@ const useCountry = () => {
   return [apiStatus, debounceHandler, languageOptions];
 };
 
-function SearchPage() {
+function SearchPage(props) {
   const [apiStatus, debounceHandler, languageOptions] = useCountry();
 
   return (
@@ -168,7 +166,7 @@ function SearchPage() {
           />
           <datalist id="languageList">
             {Object.entries(languageOptions).map((langOption) => {
-              return <option>{langOption[1]}</option>;
+              return <option key={langOption[0]}>{langOption[1]}</option>;
             })}
           </datalist>
         </DropdownContent>
@@ -181,8 +179,12 @@ function SearchPage() {
         ) : (
           apiStatus.data.map((el) => {
             return (
-              <Flex key={el.id}>
-                <Link style={linkStyle} to={el.name}>
+              <Flex key={el.numericCode}>
+                <Link
+                  style={linkStyle}
+                  to={`/country/${el.name}`}
+                  country={el.name}
+                >
                   <p>{el.name}</p>
                 </Link>
                 <Img src={el.flag} alt="flag" />

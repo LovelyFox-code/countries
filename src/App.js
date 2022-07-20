@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import "./App.css";
-import { H1, Img, ImgLanding } from "./components/Style/Styled";
+import { H1, ImgLanding } from "./components/Style/Styled";
 import globe from "./world_flags_globe_2.gif";
 const btn = {
   backgroundColor: "green",
