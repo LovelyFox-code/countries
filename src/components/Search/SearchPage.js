@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import loadSpin from "../../SDGs.gif";
+import loadSpin from "../../2cf00b65f3d6e653c83107155ed224e4d4f9ae45r1-322-277_hq.gif";
 import debounce from "lodash.debounce";
 import { Link } from "react-router-dom";
 import {
@@ -13,9 +13,10 @@ import {
 } from "../Style/Styled";
 
 const linkStyle = {
-  color: "green",
+  color: "black",
   textDecoration: "none",
   fontWeight: "700",
+  fontFamily: "Edu VIC WA NT Beginner",
 };
 const useCountry = () => {
   const [apiStatus, setApiStatus] = useState({

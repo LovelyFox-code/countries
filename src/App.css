@@ -23,7 +23,7 @@
 .main{
   min-height: 100vh;
   font-size: calc(10px + 2vmin);
-  background-color: #f1f1f1;
+  /* background-color: #f1f1f1; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -41,4 +41,8 @@
   to {
     transform: rotate(360deg);
   }
+}
+p{
+  font-family: 'Edu VIC WA NT Beginner', cursive;
+  font-size: 18px;
 }

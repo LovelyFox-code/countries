@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from "react";
-import { CenteredDiv, H1 } from "../Style/Styled";
+import { CenteredDiv, H1, Img, ImgLanding } from "../Style/Styled";
 import { useParams } from "react-router-dom";
 
 export default function CountryInfo(props) {
@@ -40,7 +40,7 @@ export default function CountryInfo(props) {
   return (
     <CenteredDiv>
       <H1>{country.name}</H1>
-      <img src={country.image} alt="flag"></img>
+      <ImgLanding src={country.image} alt="flag"></ImgLanding>
       <p>population of {country.population} people</p>
       <p>capital is {country.capital}</p>
     </CenteredDiv>
